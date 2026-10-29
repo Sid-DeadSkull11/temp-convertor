@@ -10,7 +10,7 @@ def client():
 def test_homepage(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert b"Temperature Converter (Push 2)" in response.data
+    assert b"Temperature Converter" in response.data
     assert b'name="temp"' in response.data
     assert b'value="c_to_f"' in response.data
     assert b'value="f_to_c"' in response.data
