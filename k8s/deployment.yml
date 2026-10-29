@@ -19,6 +19,6 @@ spec:
     spec:
       containers:
         - name: temp-convertor
-          image: siddeadskull11/temp-convertor:v1
+          image: siddeadskull11/temp-convertor:v2
           ports:
             - containerPort: 5000
