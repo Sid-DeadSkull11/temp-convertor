@@ -32,7 +32,7 @@ pipeline {
             steps {
                 powershell """
                     (Get-Content deployment.yaml) -replace 'DOCKERHUB_USERNAME/temp-converter:IMAGE_TAG', '${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}' | Set-Content deployment.yaml
-                    kubectl apply -f deployment.yaml
+                    kubectl apply -f deployment.yml
                 """
             }
         }
