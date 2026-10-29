@@ -11,9 +11,9 @@ pipeline {
     stages {
         stage('1. Continuous Integration (Pytest)') {
             steps {
-                sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
+                bat '''
+                    python -m venv venv
+                    call venv\\Scripts\\activate
                     pip install -r requirements.txt
                     pytest test_app.py
                 '''
@@ -22,25 +22,25 @@ pipeline {
         
         stage('2. Build & Push Docker Image') {
             steps {
-                sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ."
-                sh "echo \$DOCKER_CREDS_PSW | docker login -u \$DOCKER_CREDS_USR --password-stdin"
-                sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
+                bat "docker build -t %DOCKER_HUB_USER%/%IMAGE_NAME%:%IMAGE_TAG% ."
+                bat "echo %DOCKER_CREDS_PSW% | docker login -u %DOCKER_CREDS_USR% --password-stdin"
+                bat "docker push %DOCKER_HUB_USER%/%IMAGE_NAME%:%IMAGE_TAG%"
             }
         }
         
         stage('3. Deploy to Kubernetes') {
             steps {
-                sh """
-                    sed -i 's|DOCKERHUB_USERNAME/temp-converter:IMAGE_TAG|${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}|g' deployment.yaml
+                bat '''
+                    powershell -Command "(Get-Content deployment.yaml) -replace 'DOCKERHUB_USERNAME/temp-converter:IMAGE_TAG', '%DOCKER_HUB_USER%/%IMAGE_NAME%:%IMAGE_TAG%' | Set-Content deployment.yaml"
                     kubectl apply -f deployment.yaml
-                """
+                '''
             }
         }
     }
     
     post {
         always {
-            sh "docker logout"
+            bat "docker logout"
         }
     }
 }
