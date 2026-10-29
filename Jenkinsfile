@@ -30,10 +30,11 @@ pipeline {
         
         stage('3. Deploy to Kubernetes') {
             steps {
-                powershell """
-                    (Get-Content deployment.yaml) -replace 'DOCKERHUB_USERNAME/temp-converter:IMAGE_TAG', '${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}' | Set-Content deployment.yaml
-                    kubectl apply -f deployment.yml
-                """
+                powershell '''
+                    (Get-Content k8s/deployment.yml) -replace 'DOCKERHUB_USERNAME/temp-converter:IMAGE_TAG', "$env:DOCKER_HUB_USER/$env:IMAGE_NAME:$env:IMAGE_TAG" | Set-Content k8s/deployment.yml
+                    kubectl apply -f k8s/deployment.yml
+                    kubectl apply -f k8s/service.yml
+                '''
             }
         }
     }
